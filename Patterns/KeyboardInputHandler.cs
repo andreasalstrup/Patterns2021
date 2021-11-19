@@ -24,6 +24,8 @@ namespace Patterns
                     case "white": mc.Add(new DefaultLightCommand(ld));break;
                     case "philips": mc.Add(new GLightFactoryCommand<PhilipsAdapter>(ld));break;
                     case "osram": mc.Add(new GLightFactoryCommand<OsramAdapter>(ld)); break;
+                    case "undo": mc.Add( ld); break;
+                    case "redo": mc.Add( new RedoCommand(ld)); break;
                     case string s when int.TryParse(s, out var n): mc.Add(ld.SwitchCommand(n)); break;
                 }
             }

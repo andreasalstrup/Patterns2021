@@ -1,6 +1,6 @@
 ﻿namespace Patterns
 {
-    interface ICommand
+    public interface ICommand
     {
         void Execute();
     }

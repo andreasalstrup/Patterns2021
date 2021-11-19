@@ -5,6 +5,7 @@ namespace Patterns
 {
     class LightDisplay : IObserver
     {
+        private Stack<ICommand> _stack = new Stack<ICommand>();
         private ILightFactory lightFactory ;
 
         public class DefaultLightFactory : ILightFactory
@@ -27,20 +28,44 @@ namespace Patterns
                 Ld.Lights.Add(Ld.LightFactory.CreateLight());
             }
         }
-        class StopCommandImpl : ICommand
+        // *************************************************************************************************************
+        class UndoCommand : IUndoableCommand
         {
-            public StopCommandImpl(LightDisplay ld)
+            private LightDisplay _Ld;
+            public UndoCommand(LightDisplay lightDisplay)
             {
-                Ld = ld;
+                _Ld = lightDisplay;
             }
-
-            public LightDisplay Ld { get; }
-
             public void Execute()
             {
-                Ld.Running = false;
+                throw new NotImplementedException();
+            }
+
+            public void Undo()
+            {
+                throw new NotImplementedException();
             }
         }
+
+        class RedoCommand : IRedoableCommand
+        {
+            private LightDisplay _ld;
+
+            public RedoCommand(LightDisplay lightDisplay)
+            {
+                _ld = lightDisplay;
+            }
+            public void Execute()
+            {
+                throw new NotImplementedException();
+            }
+
+            public void Redo()
+            {
+                throw new NotImplementedException();
+            }
+        }
+        // *************************************************************************************************************
         class SwitchCommandImpl : ICommand
         {
             public SwitchCommandImpl(LightDisplay ld, int lightIndex)
@@ -59,7 +84,7 @@ namespace Patterns
             }
         }
         public ICommand AddLightCommand => new AddLightCommandImpl(this);
-        public ICommand StopCommand => new StopCommandImpl(this);
+        public ICommand StopCommand => new RelayCommand(() => Running = false);
         public ICommand SwitchCommand(int light) => new SwitchCommandImpl(this, light);
 
         public LightDisplay(IInputHandler ih)
@@ -76,7 +101,10 @@ namespace Patterns
             while (Running)
             {
                 Draw();
-                Ih.GetCommand(this).Execute();
+                //Ih.GetCommand(this).Execute();
+                var cmd = Ih.GetCommand(this);
+                _stack.Push(cmd);
+                cmd.Execute();
             }
         }
 
